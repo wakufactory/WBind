@@ -1,8 +1,12 @@
 //WBind 
 // license MIT
 // 2017 wakufactory 
+WBind = {} 
 
-WBind = function() {
+WBind.create = function() {
+	return new WBind.obj ;
+}
+WBind.obj = function() {
 	this.prop = {} ;
 	this._elem = {} ;
 	this._check = {} ;
@@ -21,7 +25,7 @@ WBind._getobj = function(elem,root) {
 	return e ;		
 }
 
-WBind.prototype.bindHtml= function(name,elem,func) {
+WBind.obj.prototype.bindHtml= function(name,elem,func) {
 	var e = WBind._getobj(elem);
 	if(!e) return false ;
 	this._elem[name] = e ;
@@ -50,7 +54,7 @@ WBind.prototype.bindHtml= function(name,elem,func) {
 	else this.prop[name] = e.innerHTML ;
 	return true ;
 }
-WBind.prototype.bindStyle= function(name,elem,css,func) {
+WBind.obj.prototype.bindStyle= function(name,elem,css,func) {
 	var e = WBind._getobj(elem);
 	if(!e) return false ;
 	this._elem[name] = e ;
@@ -79,7 +83,7 @@ WBind.prototype.bindStyle= function(name,elem,css,func) {
 	else this.prop[name] = e.style[css] ;
 	return true ;	
 }
-WBind.prototype.bindAttr= function(name,elem,attr,func) {
+WBind.obj.prototype.bindAttr= function(name,elem,attr,func) {
 	var e = WBind._getobj(elem);
 	if(!e) return false ;
 	this._elem[name] = e ;
@@ -108,7 +112,7 @@ WBind.prototype.bindAttr= function(name,elem,attr,func) {
 	else this.prop[name] = e.getAttribute(attr) ;
 	return true ;	
 }
-WBind.prototype.bindInput= function(name,elem,func) {
+WBind.obj.prototype.bindInput= function(name,elem,func) {
 	var e = WBind._getobj(elem);
 	if(!e) return false ;
 	if(!func) func={} ;
@@ -233,17 +237,17 @@ WBind.prototype.bindInput= function(name,elem,func) {
 	return true ;
 }
 
-WBind.prototype.getCheck = function(name) {
+WBind.obj.prototype.getCheck = function(name) {
 	return this._check[name] ;
 }
-WBind.prototype.setFunc = function(name,func) {
+WBind.obj.prototype.setFunc = function(name,func) {
 	for(var f in func) {
 		this._func[name][f] = func[f] ;
 	}
 	return this._func[name]  ;
 }
 
-WBind.prototype.bindAllInput = function(base) {
+WBind.obj.prototype.bindAllInput = function(base) {
 	if(!base) base = document ;
 	var o = base.querySelectorAll("input,select") ;
 	var na = {} ;
