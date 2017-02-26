@@ -24,6 +24,20 @@ WBind._getobj = function(elem,root) {
 	}
 	return e ;		
 }
+WBind._getval = function(e) {
+	var v = e.value ;
+	if(e.type=="checkbox") {
+		v = e.checked ;
+	}
+	if(e.type=="select-multiple") {
+		var o = e.querySelectorAll("option") ;
+		v = [] ;
+		for(var i in o) {
+			if(o[i].selected) v.push(o[i].value) ;
+		}
+	}
+	return v ;		
+}
 
 WBind.bindHtml= function(obj,name,elem,func) {
 	var e = WBind._getobj(elem);
@@ -123,7 +137,7 @@ WBind.bindInput= function(obj,name,elem,func) {
 		get: function() {
 //			obj.prop[name] = e.value ;
 			var v = _getprop(name) ;
-			if(obj._func[name].get) obj._func[name].get(v) ;
+//			if(obj._func[name].get) v = obj._func[name].get(v) ;
 			return v  ;
 		},
 		set:function(val) {
@@ -142,13 +156,16 @@ WBind.bindInput= function(obj,name,elem,func) {
 		for(var i in e) {
 			if( typeof e[i] != "object") continue ;
 			e[i].addEventListener("change", function(ev) {
+				var val ;
 				if(this.type=="checkbox" ) {
 					self._check[name][this.value] = this.checked ;
-					self.prop[name] = _getprop(name);
+					val = _getprop(name);
 				}
-				else self.prop[name] = this.value ;
+				else val = this.value ;
+				if(self._func[name].get) val = self._func[name].get(val) ;
+				self.prop[name] = val ;
 				console.log("get "+name+"="+self.prop[name])
-				if(self._func[name].change) self._func[name].change(_getprop(name)) ;
+				if(self._func[name].change) self._func[name].change(val) ;
 			})
 			
 			if(e[i].type=="radio" && e[i].checked) v = e[i].value ;
@@ -158,21 +175,23 @@ WBind.bindInput= function(obj,name,elem,func) {
 			}
 		}
 	} else {
-		v = _getval(e) ;
+		v = WBind._getval(e) ;
 		e.addEventListener("change", function(ev) {
-			var val = _getval(this) ;
+			var val = WBind._getval(this) ;
+			if(self._func[name].get) val = self._func[name].get(val) ;
 			self.prop[name] = val ;
 			console.log("get "+name+"="+self.prop[name])
-			if(self._func[name].change) self._func[name].change(self.prop[name]) ;
+			if(self._func[name].change) self._func[name].change(val) ;
 		})
 		e.addEventListener("input", function(ev) {
-			var val = _getval(this) ;
+			var val = WBind._getval(this) ;
+			if(self._func[name].get) val = self._func[name].get(val) ;
 			self.prop[name] = val ;
 	//		console.log("get "+name+"="+this.value)
 			if(self._func[name].input) self._func[name].input(val) ;
 		})
 	}
-
+	if(obj._func[name].get) v = obj._func[name].get(v) ;
 	obj.prop[name] = v ;
 	if(self._func[name].input) obj._func[name].input(v) ;
 	if(self._func[name].change) obj._func[name].change(v) ;
@@ -189,23 +208,10 @@ WBind.bindInput= function(obj,name,elem,func) {
 		} else  v = self.prop[name] ;
 		return v ;
 	}
-	function _getval(e) {
-		var v = e.value ;
-		if(e.type=="checkbox") {
-			v = e.checked ;
-		}
-		if(e.type=="select-multiple") {
-			var o = e.querySelectorAll("option") ;
-			v = [] ;
-			for(var i in o) {
-				if(o[i].selected) v.push(o[i].value) ;
-			}
-		}
-		return v ;		
-	}
+
 	function _setval(name,v) {
 		var e = self._elem[name] ;
-		if(e instanceof NodeList) {
+		if(e instanceof NodeList || Array.isArray(e)) {
 			if(e[0].type=="radio") {
 				for(var i in e) {
 					if(e[i].value == v) e[i].checked = true ;
@@ -244,6 +250,9 @@ WBind.setFunc = function(obj,name,func) {
 	for(var f in func) {
 		obj._func[name][f] = func[f] ;
 	}
+	var val = WBind._getval( obj._elem[name]) ;
+	if(obj._func[name].get) val = obj._func[name].get(val) ;
+	obj.prop[name] = val ;
 	return obj._func[name]  ;
 }
 
