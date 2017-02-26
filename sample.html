@@ -6,50 +6,49 @@
 <title>bind test</title>
 <script src="WBind.js"></script>
 <script>
+//create binding object
 var input = new WBind ;
 var output = new WBind ;
-var allinput  =  new WBind ;
 
 onload = function() {
-	var o = document.querySelectorAll("input,select") ;
-	var na = {} ;
-	for(var i=0;i<o.length;i++) {
-		var n = o[i].name ;
-		if(na[n]) {
-			if(Array.isArray(na[n])) na[n].push(o[i]) ;
-			else na[n] = [na[n],o[i]] ;
-		} else na[n] = o[i] ;
-	}
+
+// bind all input to object "input"
+	var na  = input.bindAllInput() ;
 	console.log(na) ;
+	
+//bind target span and set onchange event function
 	for(var i in na) {
-		console.log(i) ;
 		output.bindHtml("v"+i,"#d_v"+i) ;
-		input.bindInput(i,na[i],{change:(function(v){
+		input.setFunc(i,{change:(function(v){
 			var id ="v"+i ;
 			return function(v) {
 				output[id] = v ;
 			}
 		})()}) ;
 	}
-	input.setFunc("text1",{input:function(v){
-		output.vtext1 = "["+v+"]" ;
-	}}) ;
+//set setter function
+	output.setFunc("vrange1",{set:function(v) {
+		return v+"%" ;
+	}})
 	
+	//bind CSS
 	output.bindStyle("vcol","span","color") ;
 	output.bindStyle("icol","input,select,label","color") ;
 	output.vcol = "red" ;
 	output.icol = "blue" ;
 	
+	//bind Attribute
 	input.bindAttr("rmax","#i_range","max") ;
 	input.rmax = 200 ;
-	
-	allinput.bindAllInput() ;
 	
 	console.log(input) ;
 	console.log(output) ;
 	
+	//set event 
 	WBind.addev("#b_dump","click",function(ev) {
-		WBind.set([{id:"result",value:JSON.stringify(allinput.prop),style:{"width":"20em","height":"4em"}}]);
+		WBind.set([{id:"result",
+			value:JSON.stringify(input.prop),
+			style:{"width":"20em","height":"4em"}}]);
 	})
 
 }

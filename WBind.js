@@ -1,22 +1,28 @@
+//WBind 
+// license MIT
+// 2017 wakufactory 
+
 WBind = function() {
 	this.prop = {} ;
 	this._elem = {} ;
 	this._check = {} ;
 	this._func = {} ;
-	this._getobj = function(elem) {
-		var e ;
-		if(typeof elem == "string") {
-			if(elem.substr(0,1)=="#") e = document.getElementById(elem.substr(1)) ;
-			else e = document.querySelectorAll(elem) ;
-		} else {
-			e = elem ;
-		}
-		return e ;		
+}
+
+WBind._getobj = function(elem,root) {
+	if(!root) root = document ;
+	var e ;
+	if(typeof elem == "string") {
+		if(elem.substr(0,1)=="#") e = root.getElementById(elem.substr(1)) ;
+		else e = root.querySelectorAll(elem) ;
+	} else {
+		e = elem ;
 	}
+	return e ;		
 }
 
 WBind.prototype.bindHtml= function(name,elem,func) {
-	var e = this._getobj(elem);
+	var e = WBind._getobj(elem);
 	if(!e) return false ;
 	this._elem[name] = e ;
 	if(!func) func={} ;
@@ -45,7 +51,7 @@ WBind.prototype.bindHtml= function(name,elem,func) {
 	return true ;
 }
 WBind.prototype.bindStyle= function(name,elem,css,func) {
-	var e = this._getobj(elem);
+	var e = WBind._getobj(elem);
 	if(!e) return false ;
 	this._elem[name] = e ;
 	if(!func) func={} ;
@@ -74,7 +80,7 @@ WBind.prototype.bindStyle= function(name,elem,css,func) {
 	return true ;	
 }
 WBind.prototype.bindAttr= function(name,elem,attr,func) {
-	var e = this._getobj(elem);
+	var e = WBind._getobj(elem);
 	if(!e) return false ;
 	this._elem[name] = e ;
 	if(!func) func={} ;
@@ -103,7 +109,7 @@ WBind.prototype.bindAttr= function(name,elem,attr,func) {
 	return true ;	
 }
 WBind.prototype.bindInput= function(name,elem,func) {
-	var e = this._getobj(elem);
+	var e = WBind._getobj(elem);
 	if(!e) return false ;
 	if(!func) func={} ;
 	this._func[name] = func ;
@@ -231,7 +237,10 @@ WBind.prototype.getCheck = function(name) {
 	return this._check[name] ;
 }
 WBind.prototype.setFunc = function(name,func) {
-	return this._func[name] = func  ;
+	for(var f in func) {
+		this._func[name][f] = func[f] ;
+	}
+	return this._func[name]  ;
 }
 
 WBind.prototype.bindAllInput = function(base) {
@@ -252,19 +261,11 @@ WBind.prototype.bindAllInput = function(base) {
 }
 
 
-
-
-function $log(msg) {
+WBind.log = function(msg) {
 	console.log(msg) ;
 }
 WBind.addev = function(id,event,fn,root) {
-	if(!root) root = document ;
-	if(typeof id == "string") {
-		console.log(id) ;
-		if(id.substr(0,1)=="#") e = root.getElementById(id.substr(1)) ;
-	} else {
-		e = id ;
-	}
+	var e = WBind._getobj(id,root) ;
 	if(e) {
 		e.addEventListener(event,fn) ;
 	}
@@ -275,16 +276,17 @@ WBind.set = function(data,root) {
 	for(var i =0;i<data.length;i++) {
 		var d = data[i] ;
 		var e ;
-		if(d.id) e = [root.getElementById(d.id)] ;
+		if(d.obj) e = WBind._getobj(d.obj,root) ;
+		if(d.id) e = root.getElementById(d.id) ;
 		if(d.sel) e = root.querySelectorAll(d.sel) ;
-		if(e) {
-			for(ee in e) {
-				if(d.html) e[ee].innerHTML = d.html ;
-				if(d.value) e[ee].value = d.value ;
-				if(d.attr) e[ee].setAttribute(d.attr,d.value) ;
-				if(d.style) {
-					for(s in d.style) e[ee].style[s] = d.style[s] ;
-				}
+		if(!e) continue ;
+		if(!(e instanceof NodeList || Array.isArray(e))) e = [e] ;
+		for(ee in e) {
+			if(d.html) e[ee].innerHTML = d.html ;
+			if(d.value) e[ee].value = d.value ;
+			if(d.attr) e[ee].setAttribute(d.attr,d.value) ;
+			if(d.style) {
+				for(s in d.style) e[ee].style[s] = d.style[s] ;
 			}
 		}
 	}
