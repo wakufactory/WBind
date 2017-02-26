@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width" /> 
+<title>bind test</title>
+<script src="WBind.js"></script>
+<script>
+var input = new WBind ;
+var output = new WBind ;
+var allinput  =  new WBind ;
+
+onload = function() {
+	var o = document.querySelectorAll("input,select") ;
+	var na = {} ;
+	for(var i=0;i<o.length;i++) {
+		var n = o[i].name ;
+		if(na[n]) {
+			if(Array.isArray(na[n])) na[n].push(o[i]) ;
+			else na[n] = [na[n],o[i]] ;
+		} else na[n] = o[i] ;
+	}
+	console.log(na) ;
+	for(var i in na) {
+		console.log(i) ;
+		output.bindHtml("v"+i,"#d_v"+i) ;
+		input.bindInput(i,na[i],{change:(function(v){
+			var id ="v"+i ;
+			return function(v) {
+				output[id] = v ;
+			}
+		})()}) ;
+	}
+	input.setFunc("text1",{input:function(v){
+		output.vtext1 = "["+v+"]" ;
+	}}) ;
+	
+	output.bindStyle("vcol","span","color") ;
+	output.bindStyle("icol","input,select,label","color") ;
+	output.vcol = "red" ;
+	output.icol = "blue" ;
+	
+	input.bindAttr("rmax","#i_range","max") ;
+	input.rmax = 200 ;
+	
+	allinput.bindAllInput() ;
+	
+	console.log(input) ;
+	console.log(output) ;
+	
+	WBind.addev("#b_dump","click",function(ev) {
+		WBind.set([{id:"result",value:JSON.stringify(allinput.prop),style:{"width":"20em","height":"4em"}}]);
+	})
+
+}
+</script>
+<body>
+<h1>WBind sample</h1>
+<input type=text id=i_text name=text1><span id=d_vtext1></span><br/>
+<select id=s_type name=sel1>
+<option value=0>-</option>
+<option value=1>a</option>
+<option value=2>b</option>
+<option value=3>c</option>
+<option value=4>d</option>
+<option value=5>e</option>
+</select><span id=d_vsel1></span><br/>
+
+<select id=s_type2 name=sel2 multiple="true">
+<option value=1>a</option>
+<option value=2>b</option>
+<option value=3>c</option>
+<option value=4>d</option>
+<option value=5>e</option>
+</select><span id=d_vsel2></span><br/>
+
+<input type=range min=0 max=100 value=50 id=i_range name=range1><span id=d_vrange1></span><br/>
+<label><input type=checkbox id=i_check name=chk1 ><span id=d_vchk1></span></label><br/>
+<label><input type=radio name=radio1 value=1>あ</label>
+<label><input type=radio name=radio1 value=2>い</label>
+<label><input type=radio name=radio1 value=3>う</label>
+<span id=d_vradio1></span>
+<br/>
+<label><input type=checkbox name=chk2 value=1>A</label>
+<label><input type=checkbox name=chk2 value=2>B</label>
+<label><input type=checkbox name=chk2 value=3>C</label>
+<label><input type=checkbox name=chk2 value=4>D</label>
+<span id=d_vchk2></span>
+<br/>
+<button id=b_dump>Dump</button><br/>
+<textarea id=result ></textarea>
+
