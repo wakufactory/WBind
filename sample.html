@@ -9,36 +9,41 @@
 //create binding object
 var input = WBind.create() ;
 var output = WBind.create() ;
+var out2 = WBind.create() ;
 
 onload = function() {
 
 // bind all input to object "input"
-	var na  = input.bindAllInput() ;
+	var na  = WBind.bindAllInput(input) ;
 	console.log(na) ;
 	
 //bind target span and set onchange event function
 	for(var i in na) {
-		output.bindHtml("v"+i,"#d_v"+i) ;
-		input.setFunc(i,{change:(function(v){
+		WBind.bindHtml(output,"v"+i,"#d_v"+i) ;
+		WBind.setFunc(input,i,{change:(function(v){
 			var id ="v"+i ;
 			return function(v) {
 				output[id] = v ;
 			}
 		})()}) ;
 	}
+//add "input" event function
+	WBind.setFunc(input,"range1",{input:function(v) {
+		output.vrange1 = v ;
+	}})
 //set setter function
-	output.setFunc("vrange1",{set:function(v) {
+	WBind.setFunc(output,"vrange1",{set:function(v) {
 		return v+"%" ;
 	}})
 	
 	//bind CSS
-	output.bindStyle("vcol","span","color") ;
-	output.bindStyle("icol","input,select,label","color") ;
+	WBind.bindStyle(output,"vcol","span","color") ;
+	WBind.bindStyle(output,"icol","input,select,label","color") ;
 	output.vcol = "red" ;
 	output.icol = "blue" ;
 	
 	//bind Attribute
-	input.bindAttr("rmax","#i_range","max") ;
+	WBind.bindAttr(input,"rmax","#i_range","max") ;
 	input.rmax = 200 ;
 	
 	console.log(input) ;
@@ -51,6 +56,8 @@ onload = function() {
 			style:{"width":"20em","height":"4em"}}]);
 	})
 
+	WBind.bindHtml(out2,"text2","#d_vtext1") ;
+	out2.text2 = "hoge" ;
 }
 </script>
 <body>
