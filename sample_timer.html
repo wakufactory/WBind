@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width" /> 
+<title>tbind test</title>
+<script src="WBind.js?"></script>
+<script>
+var input = WBind.create() ;
+var output = WBind.create() ;
+
+onload = function() {
+	input.bindHtml("r1v","#v_range1") ;
+	input.bindInput("r1","#i_range1",{input:function(v) {
+		input.r1v = v ;
+	}}) ;
+	input.bindHtml("r2v","#v_range2") ;
+	input.bindInput("r2","#i_range2",{input:function(v) {
+		input.r2v = Math.floor(v)/10 ;
+	}}) ;
+	input.bindStyle("div_pos","#d_move","margin-left",{set:function(v){return v+"px"}}) ;
+	input.r1 = 0 ;
+	input.r2 = 0 ;
+	WBind.addev("#b_up","click",function(ev) {
+		input.setTimer("r1",100,1000,{tfunc:"ease-in"}) ;
+		input.setTimer("r2",1000,500,{delay:500,efunc:function(){
+			console.log("ende") ;
+		}}) ;
+		input.setTimer("div_pos",500,1000,{tfunc:function(t){
+			return t = 1-(Math.cos(Math.PI*t)+1)/2 ;
+		}}) ;
+	}) ;
+	WBind.addev("#b_down","click",function(ev) {
+		input.setTimer("r1",0,1000,{tfunc:"ease-out"}) ;
+		input.setTimer("r2",0,500) ;
+	}) ;
+	WBind.addev("#b_clear","click",function(ev) {
+		input.clearTimer("r1") ;
+		input.clearTimer("r2") ;
+		input.clearTimer("div_pos") ;
+	}) ;
+	(function loop(){
+		window.requestAnimationFrame(loop) ;
+		input.updateTimer() ;
+	})() ;
+}
+
+</script>
+<body>
+<input type=range min=0 max=100 step=0.1 id=i_range1 style="width:500px"><span id=v_range1></span><br/>
+<input type=range min=0 max=1000 id=i_range2 style="width:500px"><span id=v_range2></span><br/>
+<div id=d_move>■</div>
+<button id=b_down>DOWN</button>
+<button id=b_up>UP</button>
+<button id=b_clear>CLEAR</button>
+

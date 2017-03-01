@@ -11,6 +11,7 @@ WBind.obj = function() {
 	this._elem = {} ;
 	this._check = {} ;
 	this._func = {} ;
+	this._tobjs = [] ;
 }
 
 WBind._getobj = function(elem,root) {
@@ -40,117 +41,117 @@ WBind._getval = function(e) {
 	return v ;		
 }
 
-WBind.bindHtml= function(obj,name,elem,func) {
+WBind.obj.prototype.bindHtml= function(name,elem,func) {
 	var e = WBind._getobj(elem);
 	if(!e) return false ;
-	obj._elem[name] = e ;
+	this._elem[name] = e ;
 	if(!func) func={} ;
-	obj._func[name] = func ;
+	this._func[name] = func ;
 
-	Object.defineProperty(obj,name,{
+	Object.defineProperty(this,name,{
 		get: function() {
 //			console.log("get "+name)
-			if((e instanceof NodeList || Array.isArray(e))) obj.prop[name] = e[0].innerHTML ;
-			else obj.prop[name] = e.innerHTML ;
-			return obj.prop[name]  ;
+			if((e instanceof NodeList || Array.isArray(e))) this.prop[name] = e[0].innerHTML ;
+			else this.prop[name] = e.innerHTML ;
+			return this.prop[name]  ;
 		},
 		set:function(val) {
 //			console.log("set "+name) 
-			if(obj._func[name].set) val = obj._func[name].set(val) ;
-			obj.prop[name] = val ;
+			if(this._func[name].set) val = this._func[name].set(val) ;
+			this.prop[name] = val ;
 			if((e instanceof NodeList || Array.isArray(e))) {
 				for(var i=0;i<e.length;i++) {
-					obj._elem[name][i].innerHTML = val 
+					this._elem[name][i].innerHTML = val 
 				}
-			} else  obj._elem[name].innerHTML = val ;
+			} else  this._elem[name].innerHTML = val ;
 		}
 	})
-	if((e instanceof NodeList || Array.isArray(e))) obj.prop[name] = e[0].innerHTML ;
-	else obj.prop[name] = e.innerHTML ;
+	if((e instanceof NodeList || Array.isArray(e))) this.prop[name] = e[0].innerHTML ;
+	else this.prop[name] = e.innerHTML ;
 	return true ;
 }
-WBind.bindStyle= function(obj,name,elem,css,func) {
+WBind.obj.prototype.bindStyle= function(name,elem,css,func) {
 	var e = WBind._getobj(elem);
 	if(!e) return false ;
-	obj._elem[name] = e ;
+	this._elem[name] = e ;
 	if(!func) func={} ;
-	obj._func[name] = func ;	
+	this._func[name] = func ;	
 
-	Object.defineProperty(obj,name,{
+	Object.defineProperty(this,name,{
 		get: function() {
 //			console.log("get "+name)
-			if((e instanceof NodeList || Array.isArray(e))) obj.prop[name] = e[0].style[css] ;
-			else obj.prop[name] = e.style[css] ;
-			return obj.prop[name]  ;
+			if((e instanceof NodeList || Array.isArray(e))) this.prop[name] = e[0].style[css] ;
+			else this.prop[name] = e.style[css] ;
+			return this.prop[name]  ;
 		},
 		set:function(val) {
 //			console.log("set "+name) 
-			if(obj._func[name].set) val = obj._func[name].set(val) ;
-			obj.prop[name] = val ;
+			if(this._func[name].set) val = this._func[name].set(val) ;
+			this.prop[name] = val ;
 			if((e instanceof NodeList || Array.isArray(e))) {
 				for(var i=0;i<e.length;i++) {
-					obj._elem[name][i].style[css] = val 
+					this._elem[name][i].style[css] = val 
 				}
-			} else obj._elem[name].style[css] = val ;
+			} else this._elem[name].style[css] = val ;
 		}
 	})
-	if((e instanceof NodeList || Array.isArray(e))) obj.prop[name] = e[0].style[css] ;
-	else obj.prop[name] = e.style[css] ;
+	if((e instanceof NodeList || Array.isArray(e))) this.prop[name] = e[0].style[css] ;
+	else this.prop[name] = e.style[css] ;
 	return true ;	
 }
-WBind.bindAttr= function(obj,name,elem,attr,func) {
+WBind.obj.prototype.bindAttr= function(name,elem,attr,func) {
 	var e = WBind._getobj(elem);
 	if(!e) return false ;
-	obj._elem[name] = e ;
+	this._elem[name] = e ;
 	if(!func) func={} ;
-	obj._func[name] = func ;	
+	this._func[name] = func ;	
 
-	Object.defineProperty(obj,name,{
+	Object.defineProperty(this,name,{
 		get: function() {
 //			console.log("get "+name)
-			if((e instanceof NodeList || Array.isArray(e))) obj.prop[name] = e[0].getAttribute(attr) ;
-			else obj.prop[name] = e.getAttribute(attr) ;
-			return obj.prop[name]  ;
+			if((e instanceof NodeList || Array.isArray(e))) this.prop[name] = e[0].getAttribute(attr) ;
+			else this.prop[name] = e.getAttribute(attr) ;
+			return this.prop[name]  ;
 		},
 		set:function(val) {
 //			console.log("set "+name) 
-			if(obj._func[name].set) val = obj._func[name].set(val) ;
-			obj.prop[name] = val ;
+			if(this._func[name].set) val = this._func[name].set(val) ;
+			this.prop[name] = val ;
 			if((e instanceof NodeList || Array.isArray(e))) {
 				for(var i=0;i<e.length;i++) {
-					obj._elem[name][i].setAttribute(attr,val) 
+					this._elem[name][i].setAttribute(attr,val) 
 				}
-			} else obj._elem[name].setAttribute(attr,val) ;
+			} else this._elem[name].setAttribute(attr,val) ;
 		}
 	})
-	if((e instanceof NodeList || Array.isArray(e))) obj.prop[name] = e[0].getAttribute(attr) ;
-	else obj.prop[name] = e.getAttribute(attr) ;
+	if((e instanceof NodeList || Array.isArray(e))) this.prop[name] = e[0].getAttribute(attr) ;
+	else this.prop[name] = e.getAttribute(attr) ;
 	return true ;	
 }
-WBind.bindInput= function(obj,name,elem,func) {
+WBind.obj.prototype.bindInput= function(name,elem,func) {
 	var e = WBind._getobj(elem);
 	if(!e) return false ;
 	if(!func) func={} ;
-	obj._func[name] = func ;
+	this._func[name] = func ;
 
-	obj._elem[name] = e ;
-	Object.defineProperty(obj,name,{
+	this._elem[name] = e ;
+	Object.defineProperty(this,name,{
 		get: function() {
-//			obj.prop[name] = e.value ;
+//			this.prop[name] = e.value ;
 			var v = _getprop(name) ;
-			if(obj._func[name].get) v = obj._func[name].get(v) ;
+			if(this._func[name].get) v = this._func[name].get(v) ;
 			return v  ;
 		},
 		set:function(val) {
 //			console.log("set "+name) 
-			if(obj._func[name].set) val = obj._func[name].set(val) ;
-			obj.prop[name] = val ;
+			if(this._func[name].set) val = this._func[name].set(val) ;
+			this.prop[name] = val ;
 			_setval(name,val) ;
-			if(obj._func[name].change) obj._func[name].change(_getprop(name)) ;
-			if(obj._func[name].input) obj._func[name].input(_getprop(name)) ;
+			if(this._func[name].change) this._func[name].change(_getprop(name)) ;
+			if(this._func[name].input) this._func[name].input(_getprop(name)) ;
 		}
 	})
-	var self = obj ;
+	var self = this ;
 	var v = null ;
 	if((e instanceof NodeList || Array.isArray(e))) {
 		if(e[0].type=="checkbox") self._check[name] = {} ;
@@ -192,10 +193,10 @@ WBind.bindInput= function(obj,name,elem,func) {
 			if(self._func[name].input) self._func[name].input(val) ;
 		})
 	}
-	if(obj._func[name].get) v = obj._func[name].get(v) ;
-	obj.prop[name] = v ;
-	if(self._func[name].input) obj._func[name].input(v) ;
-	if(self._func[name].change) obj._func[name].change(v) ;
+	if(this._func[name].get) v = this._func[name].get(v) ;
+	this.prop[name] = v ;
+	if(self._func[name].input) this._func[name].input(v) ;
+	if(self._func[name].change) this._func[name].change(v) ;
 
 
 	function _getprop(name) {
@@ -244,20 +245,20 @@ WBind.bindInput= function(obj,name,elem,func) {
 	return true ;
 }
 
-WBind.getCheck = function(obj,name) {
-	return obj._check[name] ;
+WBind.obj.prototype.getCheck = function(name) {
+	return this._check[name] ;
 }
-WBind.setFunc = function(obj,name,func) {
+WBind.obj.prototype.setFunc = function(name,func) {
 	for(var f in func) {
-		obj._func[name][f] = func[f] ;
+		this._func[name][f] = func[f] ;
 	}
-	var val = WBind._getval( obj._elem[name]) ;
-	if(obj._func[name].get) val = obj._func[name].get(val) ;
-	obj.prop[name] = val ;
-	return obj._func[name]  ;
+	var val = WBind._getval( this._elem[name]) ;
+	if(this._func[name].get) val = this._func[name].get(val) ;
+	this.prop[name] = val ;
+	return this._func[name]  ;
 }
 
-WBind.bindAllInput = function(obj,base) {
+WBind.obj.prototype.bindAllInput = function(base) {
 	if(!base) base = document ;
 	var o = base.querySelectorAll("input,select,textarea") ;
 	var na = {} ;
@@ -269,7 +270,7 @@ WBind.bindAllInput = function(obj,base) {
 		} else na[n] = o[i] ;
 	}
 	for(var i in na) {
-		WBind.bindInput(obj,i,na[i])
+		this.bindInput(i,na[i])
 	}
 	return na ;
 }
@@ -304,6 +305,74 @@ WBind.set = function(data,root) {
 			if(d.style) {
 				for(s in d.style) e[ee].style[s] = d.style[s] ;
 			}
+		}
+	}
+}
+
+//bind timer
+WBind.obj.prototype.updateTimer = function() {
+	var now = new Date().getTime() ;
+	var del = 0 ;
+	for(var i=0;i<this._tobjs.length;i++) {
+		var o = this._tobjs[i] ;
+		if(o==null) continue ;
+		
+		if(o.st>now) continue ;
+		if(o.et<=now) {
+			this[o.key] = o.to ;
+//			console.log("timeup "+o.key) ;
+			if(o.opt.efunc) o.opt.efunc(o.to) ;
+			this._tobjs[i] = null ;
+			del++ ;
+		} else {
+			var t = (now-o.st)/(o.et-o.st) ;
+			if(o.opt.tfunc) {
+				if(typeof o.opt.tfunc =="string") {
+					switch(o.opt.tfunc) {
+						case "ease-in":
+							t = t*t ;
+							break ;
+						case "ease-out":
+							t = t*(2-t) ;
+							break ;
+						case "ease-inout":
+							t = t*t*(3-2*t) ;
+							break;
+					}
+				} else t = o.opt.tfunc(t) ;
+			}
+			var v = o.from + (o.to-o.from)* t;
+//			console.log(o.key+"="+v) ;
+			this[o.key] = v ;
+		}
+	}
+	if(del>0) {
+		var o = []
+		for(var i=0;i<this._tobjs.length;i++) if(this._tobjs[i]!=null) o.push(this._tobjs[i]) ;
+		this._tobjs = o ;
+	}
+}
+WBind.obj.prototype.setTimer = function(key,to,ttime,opt) {
+	if(!opt) opt = {} ;
+	var cd ;
+	if(opt.from) cd = opt.from  ;
+	else cd = this[key] ;
+	if(isNaN(cd)) cd = 0 ;
+	if(cd == to) return ;
+	var delay = 0 ;
+	if(opt.delay) delay = opt.delay ;
+	var now = new Date().getTime() ;
+	var o =  {key:key,from:cd,to:to,st:now+delay,et:now+delay+ttime,opt:opt} ;
+	this._tobjs.push(o)
+//	console.log(o) ;
+}
+WBind.obj.prototype.clearTimer = function(key) {
+	for(var i=0;i<this._tobjs.length;i++) {
+		o = this._tobjs[i] ;
+		if(o==null) continue ;
+		if(o.key == key) {
+			this._tobjs.splice(i,1) ;
+			break;
 		}
 	}
 }
