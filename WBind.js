@@ -32,10 +32,11 @@ WBind._getval = function(e) {
 	if(e.type=="select-multiple") {
 		var o = e.querySelectorAll("option") ;
 		v = [] ;
-		for(var i in o) {
+		for(var i=0;i<o.length;i++ ) {
 			if(o[i].selected) v.push(o[i].value) ;
 		}
 	}
+	if(e.type=="range") v = parseFloat(v) ;
 	return v ;		
 }
 
@@ -137,7 +138,7 @@ WBind.bindInput= function(obj,name,elem,func) {
 		get: function() {
 //			obj.prop[name] = e.value ;
 			var v = _getprop(name) ;
-//			if(obj._func[name].get) v = obj._func[name].get(v) ;
+			if(obj._func[name].get) v = obj._func[name].get(v) ;
 			return v  ;
 		},
 		set:function(val) {
@@ -153,7 +154,7 @@ WBind.bindInput= function(obj,name,elem,func) {
 	var v = null ;
 	if((e instanceof NodeList || Array.isArray(e))) {
 		if(e[0].type=="checkbox") self._check[name] = {} ;
-		for(var i in e) {
+		for(var i=0;i<e.length;i++) {
 			if( typeof e[i] != "object") continue ;
 			e[i].addEventListener("change", function(ev) {
 				var val ;
@@ -162,9 +163,9 @@ WBind.bindInput= function(obj,name,elem,func) {
 					val = _getprop(name);
 				}
 				else val = this.value ;
-				if(self._func[name].get) val = self._func[name].get(val) ;
 				self.prop[name] = val ;
-				console.log("get "+name+"="+self.prop[name])
+				if(self._func[name].get) val = self._func[name].get(val) ;
+				console.log("get "+name+"="+val)
 				if(self._func[name].change) self._func[name].change(val) ;
 			})
 			
@@ -178,15 +179,15 @@ WBind.bindInput= function(obj,name,elem,func) {
 		v = WBind._getval(e) ;
 		e.addEventListener("change", function(ev) {
 			var val = WBind._getval(this) ;
-			if(self._func[name].get) val = self._func[name].get(val) ;
 			self.prop[name] = val ;
-			console.log("get "+name+"="+self.prop[name])
+			if(self._func[name].get) val = self._func[name].get(val) ;
+			console.log("get "+name+"="+val)
 			if(self._func[name].change) self._func[name].change(val) ;
 		})
 		e.addEventListener("input", function(ev) {
 			var val = WBind._getval(this) ;
-			if(self._func[name].get) val = self._func[name].get(val) ;
 			self.prop[name] = val ;
+			if(self._func[name].get) val = self._func[name].get(val) ;
 	//		console.log("get "+name+"="+this.value)
 			if(self._func[name].input) self._func[name].input(val) ;
 		})
@@ -213,7 +214,7 @@ WBind.bindInput= function(obj,name,elem,func) {
 		var e = self._elem[name] ;
 		if(e instanceof NodeList || Array.isArray(e)) {
 			if(e[0].type=="radio") {
-				for(var i in e) {
+				for(var i=0;i<e.length;i++ ) {
 					if(e[i].value == v) e[i].checked = true ;
 				}
 			}
@@ -222,7 +223,7 @@ WBind.bindInput= function(obj,name,elem,func) {
 				for(var i=0; i<v.length;i++) {
 					chk[v[i]] = true ;
 				}
-				for(var i in e) {
+				for(var i=0;i<e.length;i++ ) {
 					e[i].checked = chk[e[i].value] ;
 				}
 				self._check[name] = chk ;
@@ -231,7 +232,7 @@ WBind.bindInput= function(obj,name,elem,func) {
 		else if(e.type=="checkbox") e.checked = v ;
 		else if(e.type=="select-multiple") {
 			var o = e.querySelectorAll("option") ;
-			for(var i in o) {
+			for(var i=0;i<o.length;i++ ) {
 				o[i].selected = false ;
 				for(var vi=0;vi<v.length;vi++) {
 					if(o[i].value==v[vi]) o[i].selected = true ;
@@ -258,7 +259,7 @@ WBind.setFunc = function(obj,name,func) {
 
 WBind.bindAllInput = function(obj,base) {
 	if(!base) base = document ;
-	var o = base.querySelectorAll("input,select") ;
+	var o = base.querySelectorAll("input,select,textarea") ;
 	var na = {} ;
 	for(var i=0;i<o.length;i++) {
 		var n = o[i].name ;
@@ -280,7 +281,9 @@ WBind.log = function(msg) {
 WBind.addev = function(id,event,fn,root) {
 	var e = WBind._getobj(id,root) ;
 	if(e) {
-		e.addEventListener(event,fn) ;
+		e.addEventListener(event,function(ev) {
+			if(!fn(ev)) ev.preventDefault() ;
+		}) ;
 	}
 }
 WBind.set = function(data,root) {
@@ -294,7 +297,7 @@ WBind.set = function(data,root) {
 		if(d.sel) e = root.querySelectorAll(d.sel) ;
 		if(!e) continue ;
 		if(!(e instanceof NodeList || Array.isArray(e))) e = [e] ;
-		for(ee in e) {
+		for(var ee=0;ee<e.length;ee++ ) {
 			if(d.html) e[ee].innerHTML = d.html ;
 			if(d.value) e[ee].value = d.value ;
 			if(d.attr) e[ee].setAttribute(d.attr,d.value) ;

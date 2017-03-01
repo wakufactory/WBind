@@ -37,7 +37,7 @@ onload = function() {
 	}})
 	
 	//bind CSS
-	WBind.bindStyle(output,"vcol","span","color") ;
+	WBind.bindStyle(output,"vcol","span,div","color") ;
 	WBind.bindStyle(output,"icol","input,select,label","color") ;
 	output.vcol = "red" ;
 	output.icol = "blue" ;
@@ -91,7 +91,9 @@ onload = function() {
 <label><input type=checkbox name=chk2 value=2>B</label>
 <label><input type=checkbox name=chk2 value=3>C</label>
 <label><input type=checkbox name=chk2 value=4>D</label>
-<span id=d_vchk2></span>
+<span id=d_vchk2></span><br/>
+<textarea name="texta"></textarea>
+<div id=d_vtexta style="white-space: pre"></div>
 <br/>
 <button id=b_dump>Dump</button><br/>
 <textarea id=result ></textarea>
